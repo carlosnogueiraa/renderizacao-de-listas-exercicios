@@ -6,39 +6,36 @@ import {
   Tarefa,
   TaskInput,
   AddTaskButton,
-  RemoveButton,
-  LinhaHorizontal
+  LinhaHorizontal,
+  TarefaConcluida
 } from "./styled";
-import bin from "../../assets/bin.png";
+import ListaConcluida from "../ListaConcluida";
 
 export function ListaTarefas() {
   const [lista, setLista] = useState(["Fazer exercícios", "Estudar React"]);
   const [novaTarefa, setNovaTarefa] = useState("");
+  const [tarefasExcluidas, setTarefasExcluidas] = useState([])
 
-  const onChangeTarefa = (event) => {
-    setNovaTarefa(event.target.value);
+  const onChangeTarefa = (e) => {
+    setNovaTarefa(e.target.value);
   };
-
-  const adicionaTarefa = () => {
+  
+  const adicionaTarefa = (e) => {
+    e.preventDefault()
     const novaLista = [...lista, novaTarefa];
     setLista(novaLista);
     setNovaTarefa("");
   };
-
-  const removeTarefa = (tarefa) => {
-    const listaFiltrada = lista.filter((item) => item !== tarefa);
-    setLista(listaFiltrada);
-  };
-
+  
   return (
     <ListaTarefasContainer>
-      <InputContainer>
+      <InputContainer onSubmit={(e) => adicionaTarefa(e)}>
         <TaskInput
           placeholder="Digite aqui uma tarefa"
           value={novaTarefa}
           onChange={onChangeTarefa}
         />
-        <AddTaskButton onClick={adicionaTarefa}>Adicionar</AddTaskButton>
+        <AddTaskButton type="submit">Adicionar</AddTaskButton>
       </InputContainer>
       <ListaContainer>
         <ul>
@@ -46,15 +43,26 @@ export function ListaTarefas() {
             return (
               <Tarefa key={index}>
                 <p>{tarefa}</p>
-                <RemoveButton onClick={() => removeTarefa(tarefa)}>
-                  <img src={bin} alt="" width="16px" />
-                </RemoveButton>
+                <ListaConcluida 
+                lista={lista} 
+                setLista={setLista} 
+                tarefa={tarefa}
+                tarefasExcluidas={tarefasExcluidas}
+                setTarefasExcluidas={setTarefasExcluidas}
+                />
               </Tarefa>
             );
           })}
         </ul>
       </ListaContainer>
       <LinhaHorizontal/>
+      {tarefasExcluidas.map((item, index) => {
+        return (
+          <TarefaConcluida key={index}>
+            <p>{item}</p>
+          </TarefaConcluida>
+        )
+      })}
     </ListaTarefasContainer>
   );
 }
